@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Submission | Unlimitail</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#001F58;--ink2:#2a3a66;--muted:#7b86a3;--border:#d7e0f0;--bg:#f5f7fc;--card:#fff;
+        --accent:#003EFF;--accent2:#8FCBED;--success:#059669;--warn:#d97706;--danger:#dc2626;
+        --teal:#1F8FA8;--radius:12px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:0 0 92px;}
+
+  .header{background:var(--ink);padding:30px 40px 26px;position:sticky;top:0;z-index:10;}
+  .header-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .logo{display:flex;align-items:center;gap:10px;color:#fff;}
+  .logo-mark{height:25px;width:auto;display:block;filter:brightness(0) invert(1);}
+  .logo-word{font-size:19px;font-weight:700;letter-spacing:-.3px;}
+  .logo-word sup{font-size:9px;font-weight:500;top:-.7em;}
+  .logo-tag{font-size:12px;font-weight:400;color:var(--accent2);padding-left:10px;border-left:1px solid rgba(255,255,255,.25);}
+  .step-bar{display:flex;gap:6px;}
+  .step-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .3s;}
+  .step-dot.active{background:var(--accent2);transform:scale(1.3);}
+  .step-dot.done{background:var(--success);}
+
+  .hero{background:var(--ink);padding:0 40px 38px;}
+  .hero-inner{max-width:780px;margin:0 auto;}
+  .hero h1{font-weight:800;letter-spacing:-1px;font-size:40px;color:#fff;line-height:1.08;margin-bottom:12px;}
+  .hero h1 em{color:var(--accent2);font-style:normal;}
+  .hero p{color:rgba(255,255,255,.62);font-size:15px;font-weight:300;line-height:1.65;}
+  .hero p b{color:rgba(255,255,255,.92);font-weight:600;}
+  .progress-track{background:rgba(255,255,255,.1);height:3px;margin-top:26px;border-radius:2px;}
+  .progress-fill{height:100%;background:var(--accent2);border-radius:2px;transition:width .4s ease;}
+
+  .body{max-width:780px;margin:0 auto;padding:0 40px;}
+  .section{margin-top:34px;}
+  .section-label{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .field{margin-bottom:18px;}
+  label{display:block;font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:6px;}
+  label .req{color:var(--danger);margin-left:3px;}
+  label .hint{font-weight:300;color:var(--muted);font-size:12px;margin-left:6px;}
+
+  input[type=text],input[type=date],select,textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);
+    border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--card);
+    outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,62,255,.1);}
+  textarea{min-height:96px;resize:vertical;line-height:1.6;}
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237b7c99' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .chip{padding:8px 15px;border:1.5px solid var(--border);border-radius:100px;font-size:13px;color:var(--ink2);
+    cursor:pointer;transition:all .18s;user-select:none;background:var(--card);}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  .prio-group{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .prio-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;
+    transition:all .18s;text-align:center;background:var(--card);}
+  .prio-card:hover{border-color:var(--accent);}
+  .prio-card.selected{border-color:var(--accent);background:rgba(0,62,255,.05);}
+  .prio-card .picon{font-size:21px;margin-bottom:4px;}
+  .prio-card .pname{font-size:13px;font-weight:600;}
+  .prio-card .pdesc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.35;}
+  .prio-card[data-gate=ok].selected{border-color:var(--success);background:rgba(5,150,105,.05);}
+  .prio-card[data-gate=wip].selected{border-color:var(--warn);background:rgba(217,119,6,.05);}
+  .prio-card[data-gate=no].selected{border-color:var(--danger);background:rgba(220,38,38,.05);}
+
+  .dl-list{display:flex;flex-direction:column;gap:8px;}
+  .dl-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);
+    border-radius:var(--radius);cursor:pointer;transition:all .18s;background:var(--card);}
+  .dl-item:hover{border-color:var(--accent2);}
+  .dl-item.selected{border-color:var(--accent);background:rgba(0,62,255,.04);}
+  .dl-item .cb{width:18px;height:18px;border:1.5px solid var(--border);border-radius:4px;display:flex;
+    align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;}
+  .dl-item.selected .cb{background:var(--accent);border-color:var(--accent);}
+  .dl-item.selected .cb::after{content:'✓';color:#fff;font-size:11px;font-weight:700;}
+  .dl-name{font-size:13px;font-weight:500;}
+  .dl-hint{font-size:11px;color:var(--muted);}
+  .char-count{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;}
+
+  /* ─── SCORE ─── */
+  .tier-ref{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+  .tref{border:1.5px solid var(--border);border-radius:10px;padding:12px 13px;background:var(--card);transition:all .2s;}
+  .tref b{display:block;font-size:11px;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;}
+  .tref span{display:block;font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--ink);margin-top:3px;}
+  .tref small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .tref.on{border-color:var(--accent);background:rgba(0,62,255,.055);}
+  .tref.on b{color:var(--accent);}
+
+  .score-item{border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;background:var(--card);
+    margin-bottom:12px;transition:border-color .18s;}
+  .score-item.answered{border-color:rgba(0,62,255,.35);}
+  .score-name{font-size:15px;font-weight:700;letter-spacing:-.2px;}
+  .score-sub{font-size:11.5px;color:var(--muted);margin-bottom:12px;}
+  .score-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+  .sc-num{border:1.5px solid var(--border);border-radius:9px;padding:9px 0;text-align:center;font-size:15px;
+    font-weight:600;color:var(--ink2);cursor:pointer;transition:all .14s;background:var(--card);user-select:none;}
+  .sc-num:hover{border-color:var(--accent);color:var(--accent);}
+  .sc-num.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .score-anchors{display:grid;grid-template-columns:2fr 1fr 2fr;gap:8px;margin-top:10px;}
+  .anc{font-size:11px;line-height:1.45;color:var(--muted);padding:8px 10px;border-radius:8px;background:var(--bg);transition:all .18s;}
+  .anc b{display:block;font-weight:700;color:var(--ink2);margin-bottom:2px;font-size:10.5px;letter-spacing:.4px;}
+  .anc.hit{background:rgba(0,62,255,.07);color:var(--ink2);}
+  .anc.hit b{color:var(--accent);}
+
+  .tier-live{position:sticky;bottom:80px;margin-top:20px;border-radius:var(--radius);padding:16px 18px;
+    background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    box-shadow:0 8px 28px rgba(0,31,88,.18);}
+  .tl-left{font-size:11px;color:var(--accent2);letter-spacing:1.4px;text-transform:uppercase;font-weight:600;}
+  .tl-total{font-size:26px;font-weight:800;letter-spacing:-1px;margin-top:2px;}
+  .tl-total small{font-size:14px;font-weight:500;color:rgba(255,255,255,.5);}
+  .tier-badge{padding:9px 16px;border-radius:100px;font-size:13px;font-weight:700;background:var(--muted);white-space:nowrap;}
+  .tier-badge.a{background:var(--accent);}
+  .tier-badge.b{background:var(--teal);}
+  .tier-note{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:3px;font-weight:300;}
+
+  .callout{border-radius:var(--radius);padding:14px 16px;font-size:12.5px;line-height:1.6;margin-bottom:18px;}
+  .callout.info{background:rgba(0,62,255,.05);border:1.5px solid rgba(0,62,255,.18);color:var(--ink2);}
+  .callout.warn{background:rgba(217,119,6,.06);border:1.5px solid rgba(217,119,6,.25);color:#7c4a03;}
+
+  .field.error input,.field.error select,.field.error textarea{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,.08);}
+  .field.error label{color:var(--danger);}
+  .field.error .chip,.field.error .prio-card,.field.error .dl-item{border-color:rgba(220,38,38,.5);}
+
+  .footer-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);
+    padding:15px 40px;z-index:20;}
+  .footer-inner{max-width:780px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .btn{padding:11px 26px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+    cursor:pointer;transition:all .18s;border:none;}
+  .btn-ghost{background:none;border:1.5px solid var(--border);color:var(--ink2);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:#0030cc;}
+  .btn-success{background:var(--success);color:#fff;}
+  .step-info{font-size:12px;color:var(--muted);}
+
+  #success{display:none;max-width:780px;margin:60px auto;padding:0 40px;text-align:center;}
+  #success.show{display:block;}
+  #success .ico{font-size:54px;margin-bottom:14px;}
+  #success h2{font-weight:800;letter-spacing:-.5px;font-size:29px;margin-bottom:10px;}
+  #success p{color:var(--muted);font-size:15px;line-height:1.75;}
+  .summary-box{background:var(--bg);border-radius:var(--radius);padding:18px;border:1px solid var(--border);
+    font-size:13px;line-height:2;}
+
+  @media(max-width:640px){
+    .row2,.prio-group,.score-anchors,.tier-ref{grid-template-columns:1fr;}
+    body{padding-bottom:104px;}
+    .header,.hero,.body{padding-left:20px;padding-right:20px;}
+    .footer-bar{padding:12px 20px;}
+    .hero h1{font-size:28px;}
+    .tier-live{flex-direction:column;align-items:flex-start;bottom:76px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <img class="logo-mark" alt="Unlimitail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQEAAAESCAYAAAD9rmDIAAAFeklEQVR4nO3dUW7bOABFUanoQrKtrDDbyk7Uj5nOtIJlSzIpkXznfAetgOBdsIbMzsuyTECuH3c/AHAvEYBwIgDhRADCiQCEEwEIJwIQTgQgnAhAuJ+l/qD543Pz1cPl+2su9fcAZc3vvjb8bPyviAPc73QE3hn/M8IA1zoVgVoB2CIMUM/hCFwdgC3CAGUU+2Dwao9iJAxw3KGTQCungKPEAbZ1exI4wqkBtu0+CfR6CjhCGEgUcRLYy4mBRCLwgjAwOhE4QRgYiQgUsvWZiTjQOhGozKmB1onADYSBlohAI9ZhEAWuIgKN+jMKgkBNbhbqQMKLWtxHBDohBNQiAh0RAmoQAQgnAp1xGqA0EYBwIgDhRKBD/klASSIA4UQAwokAhBMBCCcCEE4EIJwIQDgRgHAiAOHcLAR/SLw1WgRgev0q9siXw4oA8c5+F2OUMIgA0Up/GavHMIgAsa76NmbrnzOIANyklVODCEBD7giDCBCpp4tZaodBBKBDJcPgjUEYxPzxuZw54YgADOZoCEQABnQkBCIA4UQABrX3NCACEE4EIJwIQDgRgHAiAOFEAMKJAIQTAQgnAhBOBCCcCEA4EYBwIgDhRADCiQCEEwEIJwIQTgQgnAhAOBGAcCIA4UQAwokAhBMBCCcCEE4EIJwIQDgRgHAiAOFEAMKJAIQTAQgnAhBOBCCcCEA4EYBwIgDhRADCiQCEEwEIJwIQTgQgnAhAOBGAcCIA4UQAwokAhBMBCCcCEE4EIJwIQDgRgHAiAOFEAMKJAIQTAQgnAhBOBCCcCEA4EYBwIgDhRADCiQCEEwEIJwIQTgQgnAhAOBGAcCIA4UQAwokAhBMBCCcCEE4EIJwIQDgRgHAiAOFEAMKJAIQTAQgnAhBOBCCcCEA4EYBwIgDhRADCiQCEEwEIJwIQTgQgnAhAOBGAcCIA4UQAwokAhBMBCCcCEE4EYFDL99e85+d+1n4Q4Bp7R78mAtCps6NfEwHoQKnBPyIC0KCao18TAWjAlaNfEwG42J2Df0QEoLLWRr8mAlBY66NfEwF4Q2+Df0QE4IARRr8mAvDEiKNfEwH4V8LgH/EFIphyAzBNTgIEmT8+l7ufoUUiwLCMfh8RYAgGf54I0CWjL0cE6ILR1yMCNMfgryUC3M7o7yUCXM7o2yICVGXw7RMBijL6/ogAbzH6/okAuxn8mESATUafQQT4j9FnEoFQBs9vIhDC6NkiAoMyevYSgQEYPO8QgU4ZPqW4Y7Bxy/fXnHz/HfU5CTTG4LmaCNzI4GmBCFzI6GmRCFRk9PRABAoxeHolAicZPaMQgZ2MnlGJwAMGTxIRmIyebJERMHr43/ARMHh4brgIGD0c030EjB7e01UEDB7KazoCRg/1NRUBo4fr3RYBg4c2XBYBo4c2VYuA0UMfikTA4KFfpyJg9DCO3REwfBiTK8chnAhAOBGAcCIA4UQAwokAhBMBCCcCEE4EIJwIQDgRgHAiAOFEAMKJAIQTAQgnAhBOBCCcCBAv/dYsEYBwIkC09FPANIkAwQTgH039X4RwBeP/mwgQw/gfEwGGZviviQBDMv79RIChGP9xIsAQjP88EaBbhl+GCNAd4y9LBOiG8dchAjTP+OsSAZpk+NcRAZpi/NcTAW5l/PcTAS5n+G0RAS5j/G0SAaoz/raJANUYfx9EgKIMvz8iQBHG3y8R4C3G3z8R4DDDH4sIsJvxj0kEeMn4xyYCbDL+DCLAXww/jwgwTZPxJxOBcMbPvCzL3c/ATvPHZ7FflvHzm5NAEMPnESeBzpw5DRg/z4hAp/bEwPjZQwQ6t46B4XOUCEC4H3c/AHAvEYBwIgDhRADCiQCEEwEIJwIQTgQg3C8wvIHM3xn7+QAAAABJRU5ErkJggg=="><span class="logo-word">unlimitail<sup>®</sup></span><span class="logo-tag" id="logo-tag">cases</span>
+    </div>
+    <div class="step-bar">
+      <div class="step-dot active" id="dot-1"></div><div class="step-dot" id="dot-2"></div>
+      <div class="step-dot" id="dot-3"></div><div class="step-dot" id="dot-4"></div>
+      <div class="step-dot" id="dot-5"></div>
+    </div>
+  </div>
+</div>
+
+<div class="hero"><div class="hero-inner">
+  <h1 id="hero-title"></h1>
+  <p id="hero-sub"></p>
+  <div class="progress-track"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+</div></div>
+
+<div id="form-wrapper"><div class="body">
+
+  <!-- STEP 1 -->
+  <div id="step-1">
+    <div class="section">
+      <div class="section-label">Who is filling this in</div>
+      <div class="row2">
+        <div class="field"><label>Your name <span class="req">*</span></label>
+          <input type="text" id="dono" placeholder="Name of the person submitting the case" oninput="up()"></div>
+        <div class="field"><label>Your email <span class="req">*</span></label>
+          <input type="text" id="email" placeholder="name@unlimitail.com" oninput="up()"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Brand contact <span class="req">*</span></label>
+          <input type="text" id="comercial" placeholder="Contact name at the brand" oninput="up()"></div>
+        <div class="field"><label>Agency contact involved<span class="hint">Optional</span></label>
+          <input type="text" id="agencia" placeholder="Name and agency" oninput="up()"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Banners</div>
+      <div class="field">
+        <label>Where the campaign ran <span class="req">*</span><span class="hint">You can select more than one</span></label>
+        <div class="chip-group" id="bandeira-group">
+          <div class="chip" data-val="Carrefour" onclick="tc(this)">Carrefour</div>
+          <div class="chip" data-val="Atacadão" onclick="tc(this)">Atacadão</div>
+          <div class="chip" data-val="Sam's Club" onclick="tc(this)">Sam's Club</div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">The case</div>
+      <div class="row2">
+        <div class="field"><label>Advertiser <span class="req">*</span></label>
+          <input type="text" id="anunciante" placeholder="E.g. Jim Beam" oninput="up()"></div>
+        <div class="field"><label>Category <span class="req">*</span></label>
+          <input type="text" id="categoria" placeholder="E.g. Spirits" oninput="up()"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Campaign start <span class="req">*</span></label>
+          <input type="date" id="inicio" oninput="up()"></div>
+        <div class="field"><label>Campaign end <span class="req">*</span></label>
+          <input type="date" id="fim" oninput="up()"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step-2" style="display:none">
+    <div class="section">
+      <div class="section-label">Challenge and mechanics</div>
+      <div class="field">
+        <label>The business challenge <span class="req">*</span><span class="hint">In a few words, what brand problem led to this campaign</span></label>
+        <textarea id="desafio" style="min-height:78px" placeholder="Avoid just &quot;sell more&quot;. Go into detail: reaching a new audience, expanding into a new region, launching product X." oninput="cc(this,'c1',400);up()"></textarea>
+        <div class="char-count" id="c1">0 / 400</div>
+      </div>
+      <div class="field">
+        <label>Campaign strategy <span class="req">*</span><span class="hint">How the campaign was designed from the start: which channels were planned, why, and with what goals</span></label>
+        <textarea id="mecanica" placeholder="E.g. we started with creators to build relevance, took the content to Meta Ads and closed at the Sam's Club shelf..." oninput="cc(this,'c2',600);up()"></textarea>
+        <div class="char-count" id="c2">0 / 600</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">In-store touchpoints</div>
+      <div class="field"><label>Select all that ran <span class="req">*</span></label>
+        <div class="chip-group" id="contato-group">
+          <div class="chip" data-val="Entrance portal" onclick="tc(this)">Entrance portal</div>
+          <div class="chip" data-val="Impact screen" onclick="tc(this)">Impact screen</div>
+          <div class="chip" data-val="Overhead screen" onclick="tc(this)">Overhead screen</div>
+          <div class="chip" data-val="Floor graphic" onclick="tc(this)">Floor graphic</div>
+          <div class="chip" data-val="Banner" onclick="tc(this)">Banner</div>
+          <div class="chip" data-val="Antenna" onclick="tc(this)">Antenna</div>
+          <div class="chip" data-val="Railing" onclick="tc(this)">Railing</div>
+          <div class="chip" data-val="Shopping cart" onclick="tc(this)">Shopping cart</div>
+          <div class="chip" data-val="Monitor side panel" onclick="tc(this)">Monitor side panel</div>
+          <div class="chip" data-val="Escalator" onclick="tc(this)">Escalator</div>
+          <div class="chip" data-val="Check out" onclick="tc(this)">Check out</div>
+        </div>
+      </div>
+      <div class="field"><label>Environments covered <span class="req">*</span><span class="hint">This defines the omnichannel criterion</span></label>
+        <div class="chip-group" id="ambiente-group">
+          <div class="chip" data-val="Physical store" onclick="tc(this)">Physical store</div>
+          <div class="chip" data-val="Onsite" onclick="tc(this)">Onsite</div>
+          <div class="chip" data-val="Offsite" onclick="tc(this)">Offsite</div>
+          <div class="chip" data-val="Creator Checkout" onclick="tc(this)">Creator Checkout</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step-3" style="display:none">
+    <div class="section">
+      <div class="section-label">Insights report</div>
+      <div class="callout info">The case does not go into production before the insights report is ready. If you have not requested it yet, reach out to the Data team.</div>
+      <div class="field"><label>Has the report already been requested from the insights team? <span class="req">*</span></label>
+        <div class="prio-group" style="grid-template-columns:1fr 1fr" id="report-group">
+          <div class="prio-card" data-val="Yes" data-gate="ok" onclick="so(this)"><div class="picon">🟢</div><div class="pname">Yes</div><div class="pdesc">Already requested</div></div>
+          <div class="prio-card" data-val="No" data-gate="wip" onclick="so(this)"><div class="picon">🟡</div><div class="pname">No</div><div class="pdesc">Will request it</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">The three gates</div>
+      <div class="field"><label>Client approval to publish named results <span class="req">*</span></label>
+        <div class="prio-group" id="aprov-group">
+          <div class="prio-card" data-val="Yes, signed" data-gate="ok" onclick="so(this)"><div class="picon">🟢</div><div class="pname">Signed</div><div class="pdesc">Can be published</div></div>
+          <div class="prio-card" data-val="In progress" data-gate="wip" onclick="so(this)"><div class="picon">🟡</div><div class="pname">In progress</div><div class="pdesc">Awaiting response</div></div>
+          <div class="prio-card" data-val="No" data-gate="no" onclick="so(this)"><div class="picon">🔴</div><div class="pname">No</div><div class="pdesc">Results stay anonymous</div></div>
+        </div>
+      </div>
+      <div class="field"><label>Legal clearance for external assets <span class="req">*</span></label>
+        <div class="prio-group" id="juridico-group">
+          <div class="prio-card" data-val="Yes" data-gate="ok" onclick="so(this)"><div class="picon">🟢</div><div class="pname">Cleared</div><div class="pdesc">Can be produced</div></div>
+          <div class="prio-card" data-val="In progress" data-gate="wip" onclick="so(this)"><div class="picon">🟡</div><div class="pname">In progress</div><div class="pdesc">Under review</div></div>
+          <div class="prio-card" data-val="No" data-gate="no" onclick="so(this)"><div class="picon">🔴</div><div class="pname">No</div><div class="pdesc">Nothing goes external</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 · SCORE -->
+  <div id="step-4" style="display:none">
+    <div class="callout info">Six criteria, scored 1 to 5, for a maximum of 30 points. <b>If torn between two values, choose the lower one.</b></div>
+    <div class="section" style="margin-top:22px">
+      <div class="section-label">How the total becomes a tier</div>
+      <div class="tier-ref">
+        <div class="tref" id="tref-c"><b>Tier C</b><span>6 to 15</span><small>Proof Point</small></div>
+        <div class="tref" id="tref-b"><b>Tier B</b><span>16 to 23</span><small>Signature Case</small></div>
+        <div class="tref" id="tref-a"><b>Tier A</b><span>24 to 30</span><small>Hero Case</small></div>
+      </div>
+      <div class="section-label">The six criteria</div>
+      <div id="score-list"></div>
+    </div>
+    <div class="tier-live">
+      <div>
+        <div class="tl-left">Partial score</div>
+        <div class="tl-total"><span id="tl-total">0</span><small>/30</small></div>
+        <div class="tier-note" id="tl-note">Answer all six criteria.</div>
+      </div>
+      <div class="tier-badge" id="tl-badge">-</div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div id="step-5" style="display:none">
+    <div class="section">
+      <div class="section-label">Wrap-up</div>
+      <div class="field"><label>Anything the team should know</label>
+        <textarea id="obs" placeholder="Context, sensitivities, external deadlines, existing materials..." oninput="cc(this,'c4',600)"></textarea>
+        <div class="char-count" id="c4">0 / 600</div>
+      </div>
+      <div class="field"><label>Request summary</label><div class="summary-box" id="summary">Complete the previous steps.</div></div>
+    </div>
+  </div>
+
+</div></div>
+
+<div id="success"></div>
+
+<div class="footer-bar"><div class="footer-inner">
+  <div class="step-info" id="step-info">Step 1 of 5 · Who is filling in</div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="btn btn-ghost" id="btn-back" onclick="prev()" style="display:none">← Back</button>
+    <button class="btn btn-primary" id="btn-next" onclick="next()">Continue →</button>
+  </div>
+</div></div>
+
+<script>
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║  EDIT HERE                                                           ║
+   ║  Only this part. Change the text between the quotes, without         ║
+   ║  deleting the quotes or the commas at the end of each line.          ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+const CONFIG = {
+
+  // Apps Script address that saves the answers and sends the email.
+  // If left as the placeholder, the form works but saves nothing.
+  BACKEND: 'https://script.google.com/macros/s/AKfycbwRJDWimhVSOnSOjzqoe81wesiKLPJMmqYU8I8mWAxRX0Iqpe1apOE9CAhZADffv4MNqA/exec',
+
+  // Large title at the top, on two lines.
+  TITULO_1: 'Case',
+  TITULO_2: 'request',
+
+  // Tag next to the logo.
+  ETIQUETA: 'cases',
+
+  // Text under the title. Anything between <b> and </b> is bold.
+  SUBTITULO: 'Filling in this form helps us ensure the right production within the campaign timeline. Please complete it with all the required information <b>within 10 days after the campaign ends</b>, or earlier if the case requires mandatory in-store filming or photography.<br><br>The more complete the brief, the better aligned the delivery.',
+
+  // Who to contact if the submission fails.
+  CONTATO: 'Internal Communications'
+
+};
+/* ═══════════ no need to edit anything below this line ═══════════ */
+
+const CRITERIOS = [
+  {id:'marca',nome:'Brand',sub:'Strength of the advertiser and the retailer',
+   lo:'Local or low-awareness brand',md:'Regional category leader',
+   hi:'Global icon brand at a flagship retailer'},
+  {id:'relevancia',nome:'Relevance',sub:'Category and market timing',
+   lo:'Niche category, no timing hook',md:'Relevant category, generic timing',
+   hi:'Priority category tied to a key commercial moment'},
+  {id:'impacto',nome:'Impact',sub:'Proven business results',
+   lo:'No measured KPI available',md:'Solid result on a single KPI',
+   hi:'Audited uplift vs. benchmark on sales and brand KPIs'},
+  {id:'inovacao',nome:'Innovation',sub:'Novelty of the solution',
+   lo:'Standard, repeatable format',md:'New combination of existing assets',
+   hi:'Never-seen-before format, technology or use of data'},
+  {id:'disrupcao',nome:'Disruption',sub:'Potential to spark conversation',
+   lo:'Nothing new to say',md:'Interesting only internally',
+   hi:'Breaks a category norm and earns press coverage'},
+  {id:'omnicanalidade',nome:'Omnichannel',sub:'Touchpoints activated',
+   lo:'One touchpoint, one environment',md:'2 to 3 touchpoints, a single environment',
+   hi:'Store + onsite + offsite in one measured journey'}
+];
+const scores = {};
+
+function renderScore(){
+  document.getElementById('score-list').innerHTML = CRITERIOS.map(function(c){
+    return '<div class="score-item" id="si-'+c.id+'">'+
+      '<div class="score-name">'+c.nome+'</div><div class="score-sub">'+c.sub+'</div>'+
+      '<div class="score-scale">'+[1,2,3,4,5].map(function(n){
+        return '<div class="sc-num" id="sn-'+c.id+'-'+n+'" onclick="setScore(\''+c.id+'\','+n+')">'+n+'</div>';
+      }).join('')+'</div>'+
+      '<div class="score-anchors">'+
+        '<div class="anc" id="an-'+c.id+'-lo"><b>1 to 2</b>'+c.lo+'</div>'+
+        '<div class="anc" id="an-'+c.id+'-md"><b>3</b>'+c.md+'</div>'+
+        '<div class="anc" id="an-'+c.id+'-hi"><b>4 to 5</b>'+c.hi+'</div>'+
+      '</div></div>';
+  }).join('');
+}
+function setScore(id,n){
+  scores[id]=n;
+  [1,2,3,4,5].forEach(function(k){ document.getElementById('sn-'+id+'-'+k).classList.toggle('on',k===n); });
+  document.getElementById('si-'+id).classList.add('answered');
+  ['lo','md','hi'].forEach(function(b){ document.getElementById('an-'+id+'-'+b).classList.remove('hit'); });
+  document.getElementById('an-'+id+'-'+(n<=2?'lo':n===3?'md':'hi')).classList.add('hit');
+  refreshTier(); up();
+}
+function total(){ return CRITERIOS.reduce(function(t,c){ return t+(scores[c.id]||0); },0); }
+function completo(){ return CRITERIOS.every(function(c){ return scores[c.id]; }); }
+function tierOf(t,ok){
+  if(!ok) return {nome:'-',cls:'',nota:'Answer all six criteria.',k:''};
+  if(t>=24) return {nome:'TIER A · HERO',cls:'a',nota:'Full package, including video. Press and awards are conditional.',k:'a'};
+  if(t>=16) return {nome:'TIER B · SIGNATURE',cls:'b',nota:'Written and social package, no video.',k:'b'};
+  return {nome:'TIER C · PROOF POINT',cls:'',nota:'Sales material only.',k:'c'};
+}
+function refreshTier(){
+  const t=total(), ok=completo(), r=tierOf(t,ok);
+  document.getElementById('tl-total').textContent=t;
+  document.getElementById('tl-note').textContent=r.nota;
+  const b=document.getElementById('tl-badge'); b.textContent=r.nome; b.className='tier-badge '+r.cls;
+  ['a','b','c'].forEach(function(k){ document.getElementById('tref-'+k).classList.remove('on'); });
+  if(r.k) document.getElementById('tref-'+r.k).classList.add('on');
+}
+
+function tc(el){ el.classList.toggle('selected'); up(); }
+function so(el){ el.parentElement.querySelectorAll('.prio-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected'); up(); }
+function cc(el,id,max){ if(el.value.length>max) el.value=el.value.substring(0,max);
+  document.getElementById(id).textContent=el.value.length+' / '+max; up(); }
+function v(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
+function pick(g){ const e=document.querySelector('#'+g+' .prio-card.selected'); return e?e.dataset.val:''; }
+function chips(g){ return [].map.call(document.querySelectorAll('#'+g+' .chip.selected'),function(c){return c.dataset.val;}); }
+
+const CAMPOS=['dono','email','comercial','anunciante','categoria','inicio','fim',
+              'desafio','mecanica'];
+function up(){
+  let f=CAMPOS.filter(function(id){return v(id);}).length;
+  f+=[chips('bandeira-group').length,chips('contato-group').length,chips('ambiente-group').length,
+      pick('report-group'),pick('aprov-group'),pick('juridico-group')].filter(Boolean).length;
+  f+=CRITERIOS.filter(function(c){return scores[c.id];}).length;
+  document.getElementById('progress').style.width=Math.min(100,Math.round(f/(CAMPOS.length+6+6)*100))+'%';
+  if(step===5) resumo();
+}
+function resumo(){
+  const t=total(), r=tierOf(t,completo());
+  document.getElementById('summary').innerHTML=
+    '<b>Case:</b> '+(v('anunciante')||'-')+' · '+(chips('bandeira-group').join(', ')||'-')+'<br>'+
+    '<b>Category:</b> '+(v('categoria')||'-')+'<br>'+
+    '<b>Period:</b> '+(v('inicio')||'-')+' to '+(v('fim')||'-')+'<br>'+
+    '<b>Contacts:</b> '+(v('comercial')||'-')+(v('agencia')?' · '+v('agencia'):'')+'<br>'+
+    '<b>Touchpoints:</b> '+(chips('contato-group').join(', ')||'-')+'<br>'+
+    '<b>Insights report:</b> '+(pick('report-group')||'-')+'<br>'+
+    '<b>Score:</b> '+t+'/30 &nbsp;→&nbsp; <b style="color:var(--accent)">'+r.nome+'</b>';
+}
+
+let step=1;
+const LABELS=['Who is filling in','Challenge and strategy','Report and approvals','Score','Wrap-up'];
+function falta(s){
+  const f=[];
+  if(s===1){ ['dono','email','comercial','anunciante','categoria','inicio','fim'].forEach(function(i){if(!v(i))f.push(i);});
+             if(!chips('bandeira-group').length) f.push('bandeira-group'); }
+  if(s===2){ ['desafio','mecanica'].forEach(function(i){if(!v(i))f.push(i);});
+             if(!chips('contato-group').length) f.push('contato-group');
+             if(!chips('ambiente-group').length) f.push('ambiente-group'); }
+  if(s===3){ ['report-group','aprov-group','juridico-group'].forEach(function(g){if(!pick(g))f.push(g);}); }
+  if(s===4){ CRITERIOS.forEach(function(c){ if(!scores[c.id]) f.push('si-'+c.id); }); }
+  if(s===5){ return f; }
+  return f;
+}
+function next(){
+  document.querySelectorAll('.field.error').forEach(function(x){x.classList.remove('error');});
+  document.querySelectorAll('.score-item').forEach(function(x){x.style.borderColor='';});
+  const si=document.getElementById('step-info'); si.style.color='var(--muted)';
+  const f=falta(step);
+  if(f.length){
+    f.forEach(function(id){ const el=document.getElementById(id); if(!el) return;
+      if(el.classList.contains('score-item')){ el.style.borderColor='var(--danger)'; return; }
+      const fl=el.closest?el.closest('.field'):null; if(fl) fl.classList.add('error'); });
+    si.style.color='var(--danger)'; si.textContent='⚠ Please fill in the highlighted fields';
+    const p=document.getElementById(f[0]); if(p)(p.closest('.field')||p).scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  if(step===5){ enviar(); return; }
+  document.getElementById('step-'+step).style.display='none';
+  document.getElementById('dot-'+step).classList.replace('active','done');
+  step++;
+  document.getElementById('step-'+step).style.display='block';
+  document.getElementById('dot-'+step).classList.add('active');
+  rodape(); if(step===5) resumo(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function prev(){
+  document.getElementById('step-'+step).style.display='none';
+  document.getElementById('dot-'+step).classList.remove('active');
+  step--;
+  document.getElementById('step-'+step).style.display='block';
+  document.getElementById('dot-'+step).classList.remove('done');
+  document.getElementById('dot-'+step).classList.add('active');
+  rodape(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function rodape(){
+  const si=document.getElementById('step-info');
+  si.style.color='var(--muted)'; si.textContent='Step '+step+' of 5 · '+LABELS[step-1];
+  document.getElementById('btn-back').style.display=step>1?'block':'none';
+  const b=document.getElementById('btn-next');
+  b.textContent=step===5?'✓ Submit case':'Continue →';
+  b.className='btn '+(step===5?'btn-success':'btn-primary');
+}
+
+async function enviar(){
+  const b=document.getElementById('btn-next'), txt=b.textContent;
+  b.textContent='Submitting...'; b.disabled=true; b.style.opacity='.7';
+  const t=total(), r=tierOf(t,true);
+  const dados={action:'novo_case',
+    varejista:chips('bandeira-group').join(', '),anunciante:v('anunciante'),categoria:v('categoria'),
+    mercado:'',inicio:v('inicio'),fim:v('fim'),
+    dono:v('dono'),email:v('email'),comercial:v('comercial'),agencia:v('agencia'),
+    desafio:v('desafio'),mecanica:v('mecanica'),
+    contatos:chips('contato-group').join(', '),ambientes:chips('ambiente-group').join(', '),
+    kpi:'',valor:'',benchmark:'',fonte:'',controle:'',quote:'',
+    aprovacao:pick('aprov-group'),juridico:pick('juridico-group'),
+    marca:scores.marca,relevancia:scores.relevancia,impacto:scores.impacto,
+    inovacao:scores.inovacao,disrupcao:scores.disrupcao,omnicanalidade:scores.omnicanalidade,
+    total:t,tier:r.nome,
+    ativos:'',video:'',janela:'',
+    insights:pick('report-group'),replicavel:'',first:'',obs:v('obs')};
+  try{
+    if(!CONFIG.BACKEND || CONFIG.BACKEND==='COLE_AQUI_A_URL_DO_SEU_WEB_APP')
+      throw new Error('the save address has not been configured yet');
+    const res=await fetch(CONFIG.BACKEND,{method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)});
+    const out=await res.json();
+    if(out.status!=='ok') throw new Error(out.message||'server error');
+    document.getElementById('form-wrapper').style.display='none';
+    document.querySelector('.footer-bar').style.display='none';
+    document.querySelector('.hero').style.display='none';
+    const s=document.getElementById('success');
+    s.innerHTML='<div class="ico">✅</div><h2>Case submitted</h2><p><b>'+dados.anunciante+' · '+dados.varejista+
+      '</b><br>Score '+t+'/30 &nbsp;→&nbsp; <b>'+r.nome+'</b><br><br>'+
+      'Marketing will review the score with you within 2 business days, and the tier will be confirmed the same day.<br><br>'+
+      '<b style="color:var(--ink)">Thank you for completing the form. The Marketing team will be in touch shortly.</b></p>'+
+      '<div style="margin-top:26px"><button class="btn btn-ghost" onclick="location.reload()">Submit another case</button></div>';
+    s.classList.add('show'); window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){
+    alert('Could not submit: '+e.message+'\n\nPlease try again in a moment. If the problem persists, contact '+CONFIG.CONTATO+'.');
+    b.textContent=txt; b.disabled=false; b.style.opacity='1';
+  }
+}
+
+document.getElementById('hero-title').innerHTML=CONFIG.TITULO_1+'<br><em>'+CONFIG.TITULO_2+'</em>';
+document.getElementById('hero-sub').innerHTML=CONFIG.SUBTITULO;
+document.getElementById('logo-tag').textContent=CONFIG.ETIQUETA;
+document.title=CONFIG.TITULO_1+' '+CONFIG.TITULO_2+' | Unlimitail';
+renderScore(); refreshTier(); rodape();
+</script>
+</body>
+</html>
